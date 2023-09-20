@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "258398826998",
+    "firebase_url": "https://entrega3-dis-default-rtdb.firebaseio.com",
+    "project_id": "entrega3-dis",
+    "storage_bucket": "entrega3-dis.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:258398826998:android:7b9f366d639a9761ef17d7",
+        "android_client_info": {
+          "package_name": "com.Test.SID"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeEVTG0put-ZDQmI_72OiqekZdnMDDX9g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
