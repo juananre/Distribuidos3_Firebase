@@ -10,6 +10,8 @@ public class UIManager : MonoBehaviour
     public GameObject loginUI;
     public GameObject registerUI;
     public GameObject ForgotPasswordUI;
+    public GameObject userDataUI;
+    public GameObject LiderboardUI;
 
     private void Awake()
     {
@@ -30,17 +32,41 @@ public class UIManager : MonoBehaviour
         loginUI.SetActive(true);
         registerUI.SetActive(false);
         ForgotPasswordUI.SetActive(false);
+        userDataUI.SetActive(false);
     }
     public void RegisterScreen() // Regester button
     {
         loginUI.SetActive(false);
         registerUI.SetActive(true);
         ForgotPasswordUI.SetActive(false);
+        userDataUI.SetActive(false);
     }
     public void ForgotPasswordScreen()
     {
         loginUI.SetActive(false);
         registerUI.SetActive(false);
         ForgotPasswordUI.SetActive(true);
+
+    }
+    public void UserDataScreen() //Logged in
+    {
+        ClearScreen();
+        userDataUI.SetActive(true);
+    }
+    public void ClearScreen() //Turn off all screens
+    {
+        loginUI.SetActive(false);
+        registerUI.SetActive(false);
+        userDataUI.SetActive(false);
+    }
+    public void liderboardScreen()
+    {
+        userDataUI.SetActive(false);
+        LiderboardUI.SetActive(true);
+    }
+    public void GameScreen()
+    {
+        userDataUI.SetActive(true);
+        LiderboardUI.SetActive(false);
     }
 }

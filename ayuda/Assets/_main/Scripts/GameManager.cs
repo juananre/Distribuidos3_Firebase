@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     private float timer = 0f; // Inicia desde 0 segundos
     private bool isRunning;
     private float maxTime = 6f; // Establece el tiempo máximo en 6 segundos
-    private int currentScore = 1000; // Inicia con la máxima puntuación
+    public int currentScore = 0; // Inicia con la máxima puntuación
 
     void Start()
     {

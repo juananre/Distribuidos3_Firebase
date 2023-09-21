@@ -3,8 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Firebase;
 using Firebase.Auth;
+using Firebase.Database;
+using Firebase.Extensions; 
 using TMPro;
 using System.Threading.Tasks;
+using UnityEngine.UIElements;
+using Palmmedia.ReportGenerator.Core.Parser.Analysis;
+using System.Linq;
+
 
 public class AuntAdimin : MonoBehaviour
 {
@@ -13,6 +19,7 @@ public class AuntAdimin : MonoBehaviour
     public DependencyStatus dependencyStatus;
     public FirebaseAuth auth;
     public FirebaseUser User;
+    public DatabaseReference DBreference;
 
     //Login variables
     [Header("Login")]
@@ -33,6 +40,16 @@ public class AuntAdimin : MonoBehaviour
     [Header("Forgot Password")]
     public TMP_InputField emailForgotPasswordField;
     public TMP_Text confirmForgotPasswordText;
+
+    [Header("UserData")]
+    public TMP_InputField usernameField;
+    public GameManager gameManager;
+    
+
+    [Header("Leaderboard")]
+    public TextMeshProUGUI leaderboardText;
+
+    private List<PlayerScore> leaderboard = new List<PlayerScore>();
 
 
     void Awake()
@@ -57,7 +74,22 @@ public class AuntAdimin : MonoBehaviour
         Debug.Log("Setting up Firebase Auth");
         //Set the authentication instance object
         auth = FirebaseAuth.DefaultInstance;
+        DBreference = FirebaseDatabase.DefaultInstance.RootReference;
     }
+
+    public void ClearLoginFeilds()
+    {
+        emailLoginField.text = "";
+        passwordLoginField.text = "";
+    }
+    public void ClearRegisterFeilds()
+    {
+        usernameRegisterField.text = "";
+        emailRegisterField.text = "";
+        passwordRegisterField.text = "";
+        passwordRegisterVerifyField.text = "";
+    }
+
     public void LoginButton()
     {
         //Call the login coroutine passing the email and password
@@ -72,6 +104,72 @@ public class AuntAdimin : MonoBehaviour
     public void ForgotPasswordButton()
     {
         StartCoroutine(ForgotPassword(emailForgotPasswordField.text));
+    }
+    public void SignOutButton()
+    {
+        auth.SignOut();
+        UIManager.instance.LoginScreen();
+        ClearRegisterFeilds();
+        ClearLoginFeilds();
+    }
+    public void SaveDataButton()
+    {
+        StartCoroutine(UpdateUsernameAuth(usernameField.text));
+        StartCoroutine(UpdateUsernameDatabase(usernameField.text));
+        if (User != null)
+        {
+            StartCoroutine(UpdateScoreInDatabase(gameManager.currentScore));
+        }
+        else
+        {
+            Debug.LogWarning("User is not logged in. Cannot update score.");
+        }
+
+        /*StartCoroutine(UpdateXp(int.Parse(xpField.text)));
+        StartCoroutine(UpdateKills(int.Parse(killsField.text)));
+        StartCoroutine(UpdateDeaths(int.Parse(deathsField.text)));*/
+    }
+    public void UpdateLeaderboardButton()
+    {
+        UpdateLeaderboard();
+    }
+    public void UpdateLeaderboard()
+    {
+        DatabaseReference reference = FirebaseDatabase.DefaultInstance.RootReference;
+
+        reference.Child("scores").OrderByChild("score").LimitToLast(5).GetValueAsync().ContinueWith(task =>
+        {
+            if (task.IsCompleted)
+            {
+                leaderboard.Clear();
+
+                DataSnapshot snapshot = task.Result;
+
+                foreach (DataSnapshot childSnapshot in snapshot.Children.Reverse())
+                {
+                    PlayerScore playerScore = new PlayerScore();
+                    playerScore.username = childSnapshot.Child("username").Value.ToString();
+                    playerScore.score = int.Parse(childSnapshot.Child("score").Value.ToString());
+                    leaderboard.Add(playerScore);
+                }
+
+                // Ordena la lista en función de los puntajes de manera descendente
+                leaderboard = leaderboard.OrderByDescending(player => player.score).ToList();
+
+                string leaderboardDisplayText = "Leaderboard:\n";
+                for (int i = 0; i < leaderboard.Count; i++)
+                {
+                    leaderboardDisplayText += $"{i + 1}. {leaderboard[i].username}: {leaderboard[i].score}\n";
+                }
+
+                // Actualiza el TextMeshProUGUI con la nueva leaderboard
+                leaderboardText.text = leaderboardDisplayText;
+            }
+            else
+            {
+                Debug.LogError("Failed to fetch leaderboard: " + task.Exception);
+            }
+        });
     }
 
     private IEnumerator Login(string _email, string _password)
@@ -117,6 +215,14 @@ public class AuntAdimin : MonoBehaviour
             Debug.LogFormat("User signed in successfully: {0} ({1})", User.DisplayName, User.Email);
             warningLoginText.text = "";
             confirmLoginText.text = "Logged In";
+
+            yield return new WaitForSeconds(1);
+
+            usernameField.text = User.DisplayName;
+            UIManager.instance.UserDataScreen(); // Change to user data UI
+            confirmLoginText.text = "";
+            ClearLoginFeilds();
+            ClearRegisterFeilds();
         }
     }
     private IEnumerator Register(string _email, string _password, string _username)
@@ -217,6 +323,62 @@ public class AuntAdimin : MonoBehaviour
             confirmForgotPasswordText.text = "Reset email sent successfully";
         }
     }
+    private IEnumerator UpdateUsernameAuth(string _username)
+    {
+        //Create a user profile and set the username
+        UserProfile profile = new UserProfile { DisplayName = _username };
 
+        //Call the Firebase auth update user profile function passing the profile with the username
+        Task ProfileTask = User.UpdateUserProfileAsync(profile);
+        //Wait until the task completes
+        yield return new WaitUntil(predicate: () => ProfileTask.IsCompleted);
 
+        if (ProfileTask.Exception != null)
+        {
+            Debug.LogWarning(message: $"Failed to register task with {ProfileTask.Exception}");
+        }
+        else
+        {
+            //Auth username is now updated
+        }
+    }
+    private IEnumerator UpdateUsernameDatabase(string _username)
+    {
+        //Set the currently logged in user username in the database
+        Task DBTask = DBreference.Child("users").Child(User.UserId).Child("username").SetValueAsync(_username);
+
+        yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
+
+        if (DBTask.Exception != null)
+        {
+            Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
+        }
+        else
+        {
+            //Database username is now updated
+        }
+    }
+    private IEnumerator UpdateScoreInDatabase(int _score)
+    {
+
+        Task DBTask = DBreference.Child("users").Child(User.UserId).Child("score").SetValueAsync(_score);
+
+        yield return new WaitUntil(() => DBTask.IsCompleted);
+
+        if (DBTask.Exception != null)
+        {
+            Debug.LogError("Failed to update score: " + DBTask.Exception);
+        }
+        else
+        {
+            Debug.Log("Score updated successfully.");
+        }
+    }
+}
+
+[System.Serializable]
+public class PlayerScore
+{
+    public string username;
+    public int score;
 }
