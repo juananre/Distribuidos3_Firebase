@@ -76,7 +76,6 @@ public class AuntAdimin : MonoBehaviour
         auth = FirebaseAuth.DefaultInstance;
         DBreference = FirebaseDatabase.DefaultInstance.RootReference;
     }
-
     public void ClearLoginFeilds()
     {
         emailLoginField.text = "";
@@ -95,7 +94,7 @@ public class AuntAdimin : MonoBehaviour
         //Call the login coroutine passing the email and password
         StartCoroutine(Login(emailLoginField.text, passwordLoginField.text));
     }
-    //Function for the register button
+  
     public void RegisterButton()
     {
         //Call the register coroutine passing the email, password, and username
@@ -124,10 +123,6 @@ public class AuntAdimin : MonoBehaviour
         {
             Debug.LogWarning("User is not logged in. Cannot update score.");
         }
-
-        /*StartCoroutine(UpdateXp(int.Parse(xpField.text)));
-        StartCoroutine(UpdateKills(int.Parse(killsField.text)));
-        StartCoroutine(UpdateDeaths(int.Parse(deathsField.text)));*/
     }
     public void UpdateLeaderboardButton()
     {
