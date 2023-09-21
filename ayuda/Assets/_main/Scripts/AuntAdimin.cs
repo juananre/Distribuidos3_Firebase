@@ -83,13 +83,11 @@ public class AuntAdimin : MonoBehaviour
         passwordRegisterField.text = "";
         passwordRegisterVerifyField.text = "";
     }
-
     public void LoginButton()
     {
         //Call the login coroutine passing the email and password
         StartCoroutine(Login(emailLoginField.text, passwordLoginField.text));
     }
-  
     public void RegisterButton()
     {
         //Call the register coroutine passing the email, password, and username
