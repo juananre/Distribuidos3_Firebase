@@ -59,7 +59,7 @@ public class UIManager : MonoBehaviour
         registerUI.SetActive(false);
         userDataUI.SetActive(false);
     }
-    public void liderboardScreen()
+    public void ScoreboardScreen()
     {
         userDataUI.SetActive(false);
         LiderboardUI.SetActive(true);

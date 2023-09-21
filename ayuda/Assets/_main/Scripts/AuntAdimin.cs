@@ -44,13 +44,8 @@ public class AuntAdimin : MonoBehaviour
     [Header("UserData")]
     public TMP_InputField usernameField;
     public GameManager gameManager;
-    
-
-    [Header("Leaderboard")]
-    public TextMeshProUGUI leaderboardText;
-
-    private List<PlayerScore> leaderboard = new List<PlayerScore>();
-
+    public GameObject scoreElement;
+    public Transform scoreboardContent;
 
     void Awake()
     {
@@ -124,47 +119,9 @@ public class AuntAdimin : MonoBehaviour
             Debug.LogWarning("User is not logged in. Cannot update score.");
         }
     }
-    public void UpdateLeaderboardButton()
+    public void ScoreboardButton()
     {
-        UpdateLeaderboard();
-    }
-    public void UpdateLeaderboard()
-    {
-        DatabaseReference reference = FirebaseDatabase.DefaultInstance.RootReference;
-
-        reference.Child("scores").OrderByChild("score").LimitToLast(5).GetValueAsync().ContinueWith(task =>
-        {
-            if (task.IsCompleted)
-            {
-                leaderboard.Clear();
-
-                DataSnapshot snapshot = task.Result;
-
-                foreach (DataSnapshot childSnapshot in snapshot.Children.Reverse())
-                {
-                    PlayerScore playerScore = new PlayerScore();
-                    playerScore.username = childSnapshot.Child("username").Value.ToString();
-                    playerScore.score = int.Parse(childSnapshot.Child("score").Value.ToString());
-                    leaderboard.Add(playerScore);
-                }
-
-                // Ordena la lista en función de los puntajes de manera descendente
-                leaderboard = leaderboard.OrderByDescending(player => player.score).ToList();
-
-                string leaderboardDisplayText = "Leaderboard:\n";
-                for (int i = 0; i < leaderboard.Count; i++)
-                {
-                    leaderboardDisplayText += $"{i + 1}. {leaderboard[i].username}: {leaderboard[i].score}\n";
-                }
-
-                // Actualiza el TextMeshProUGUI con la nueva leaderboard
-                leaderboardText.text = leaderboardDisplayText;
-            }
-            else
-            {
-                Debug.LogError("Failed to fetch leaderboard: " + task.Exception);
-            }
-        });
+        StartCoroutine(LoadScoreboardData());
     }
 
     private IEnumerator Login(string _email, string _password)
@@ -367,6 +324,41 @@ public class AuntAdimin : MonoBehaviour
         else
         {
             Debug.Log("Score updated successfully.");
+        }
+    }
+    private IEnumerator LoadScoreboardData()
+    {
+        //Get all the users data ordered by kills amount
+        Task<DataSnapshot> DBTask = DBreference.Child("users").OrderByChild("score").GetValueAsync();
+
+        yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
+
+        if (DBTask.Exception != null)
+        {
+            Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
+        }
+        else
+        {
+            //Data has been retrieved
+            DataSnapshot snapshot = DBTask.Result;
+
+            //Destroy any existing scoreboard elements
+            foreach (Transform child in scoreboardContent.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            //Loop through every users UID
+            foreach (DataSnapshot childSnapshot in snapshot.Children.Reverse<DataSnapshot>())
+            {
+                string username = childSnapshot.Child("username").Value.ToString();
+                int score = int.Parse(childSnapshot.Child("score").Value.ToString());   
+
+                //Instantiate new scoreboard elements
+                GameObject scoreboardElement = Instantiate(scoreElement, scoreboardContent);
+                scoreboardElement.GetComponent<ScoreElement>().NewScoreElement(username, score);
+            }
+            UIManager.instance.ScoreboardScreen();
         }
     }
 }
