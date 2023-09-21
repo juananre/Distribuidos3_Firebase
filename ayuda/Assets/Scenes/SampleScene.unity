@@ -659,9 +659,9 @@ RectTransform:
   m_Father: {fileID: 999746563}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: 0}
+  m_SizeDelta: {x: 20, y: -17}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &179027899
 MonoBehaviour:
@@ -1655,8 +1655,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1211342973}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 0.38999987}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -3885,9 +3885,9 @@ RectTransform:
   m_Father: {fileID: 999746563}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 20}
+  m_SizeDelta: {x: -17, y: 20}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &829732275
 MonoBehaviour:
@@ -5356,7 +5356,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1062261041
 Transform:
   m_ObjectHideFlags: 0
@@ -6812,7 +6812,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1334650182
 Transform:
   m_ObjectHideFlags: 0
@@ -6866,9 +6866,9 @@ RectTransform:
   m_Father: {fileID: 999746563}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -17, y: -17}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1369808394
 MonoBehaviour:
@@ -7221,7 +7221,7 @@ RectTransform:
   m_Father: {fileID: 1687279904}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -9514,7 +9514,7 @@ MonoBehaviour:
   confirmForgotPasswordText: {fileID: 1690928461}
   usernameField: {fileID: 425117453}
   gameManager: {fileID: 1855456698}
-  scoreElement: {fileID: 4451615974087814922, guid: df76d6076f0c57b43bd289bfa77574a8, type: 3}
+  scoreElement: {fileID: 7389770141780195473, guid: 9b232aeacaf85f34d909d25aec167e0c, type: 3}
   scoreboardContent: {fileID: 1718981202}
 --- !u!1 &1991229912
 GameObject:
