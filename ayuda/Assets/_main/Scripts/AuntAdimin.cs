@@ -49,13 +49,12 @@ public class AuntAdimin : MonoBehaviour
 
     void Awake()
     {
-        //Check that all of the necessary dependencies for Firebase are present on the system
+        //Comprueba que todas las dependencias necesarias para Firebase estén presentes en el sistema
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
         {
             dependencyStatus = task.Result;
             if (dependencyStatus == DependencyStatus.Available)
             {
-                //If they are avalible Initialize Firebase
                 InitializeFirebase();
             }
             else
@@ -67,7 +66,7 @@ public class AuntAdimin : MonoBehaviour
     private void InitializeFirebase()
     {
         Debug.Log("Setting up Firebase Auth");
-        //Set the authentication instance object
+        //Establece el objeto de instancia de autenticación
         auth = FirebaseAuth.DefaultInstance;
         DBreference = FirebaseDatabase.DefaultInstance.RootReference;
     }
@@ -85,16 +84,17 @@ public class AuntAdimin : MonoBehaviour
     }
     public void LoginButton()
     {
-        //Call the login coroutine passing the email and password
+        //Llama a la corutina de inicio pasando el correo electrónico y la contraseña
         StartCoroutine(Login(emailLoginField.text, passwordLoginField.text));
     }
     public void RegisterButton()
     {
-        //Call the register coroutine passing the email, password, and username
+        //Llama a la corutina de registro pasando el correo electrónico, la contraseña y el nombre de usuario
         StartCoroutine(Register(emailRegisterField.text, passwordRegisterField.text, usernameRegisterField.text));
     }
     public void ForgotPasswordButton()
     {
+        //llama a la corutina recuperar contraceña
         StartCoroutine(ForgotPassword(emailForgotPasswordField.text));
     }
     public void SignOutButton()
@@ -124,14 +124,14 @@ public class AuntAdimin : MonoBehaviour
 
     private IEnumerator Login(string _email, string _password)
     {
-        //Call the Firebase auth signin function passing the email and password
+        //Llama a la función de inicio de sesión de autenticación de Firebase pasando el correo electrónico y la contraseña
         Task<AuthResult> LoginTask = auth.SignInWithEmailAndPasswordAsync(_email, _password);
         //Wait until the task completes
         yield return new WaitUntil(predicate: () => LoginTask.IsCompleted);
 
         if (LoginTask.Exception != null)
         {
-            //If there are errors handle them
+            //Si hay errores manejarlos
             Debug.LogWarning(message: $"Failed to register task with {LoginTask.Exception}");
             FirebaseException firebaseEx = LoginTask.Exception.GetBaseException() as FirebaseException;
             AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
@@ -159,8 +159,7 @@ public class AuntAdimin : MonoBehaviour
         }
         else
         {
-            //User is now logged in
-            //Now get the result
+            //El usuario ya ha iniciado sesión
             User = LoginTask.Result.User;
             Debug.LogFormat("User signed in successfully: {0} ({1})", User.DisplayName, User.Email);
             warningLoginText.text = "";
@@ -169,7 +168,7 @@ public class AuntAdimin : MonoBehaviour
             yield return new WaitForSeconds(1);
 
             usernameField.text = User.DisplayName;
-            UIManager.instance.UserDataScreen(); // Change to user data UI
+            UIManager.instance.UserDataScreen(); // Cambiar a la interfaz de usuario de datos del usuario
             confirmLoginText.text = "";
             ClearLoginFeilds();
             ClearRegisterFeilds();
@@ -179,24 +178,24 @@ public class AuntAdimin : MonoBehaviour
     {
         if (_username == "")
         {
-            //If the username field is blank show a warning
+            //Si el campo de nombre de usuario está en blanco mostrar una advertencia
             warningRegisterText.text = "Missing Username";
         }
         else if (passwordRegisterField.text != passwordRegisterVerifyField.text)
         {
-            //If the password does not match show a warning
+            //Si la contraseña no coincide muestra un aviso
             warningRegisterText.text = "Password Does Not Match!";
         }
         else
         {
-            //Call the Firebase auth signin function passing the email and password
+            //Llama a la función de inicio de sesión de autenticación de Firebase pasando el correo electrónico y la contraseña
             Task<AuthResult> RegisterTask = auth.CreateUserWithEmailAndPasswordAsync(_email, _password);
-            //Wait until the task completes
+            //Espera hasta que se complete la tarea
             yield return new WaitUntil(predicate: () => RegisterTask.IsCompleted);
 
             if (RegisterTask.Exception != null)
             {
-                //If there are errors handle them
+                //Si hay errores manejarlos
                 Debug.LogWarning(message: $"Failed to register task with {RegisterTask.Exception}");
                 FirebaseException firebaseEx = RegisterTask.Exception.GetBaseException() as FirebaseException;
                 AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
@@ -221,23 +220,24 @@ public class AuntAdimin : MonoBehaviour
             }
             else
             {
-                //User has now been created
-                //Now get the result
+                //El usuario ya ha sido creado
+                //Ahora obtenemos el resultado
                 User = RegisterTask.Result.User;
 
                 if (User != null)
                 {
-                    //Create a user profile and set the username
+                    //Crea un perfil de usuario y establece el nombre de usuario
                     UserProfile profile = new UserProfile { DisplayName = _username };
 
-                    //Call the Firebase auth update user profile function passing the profile with the username
+                    // Llame a la función de actualización del perfil de usuario de autenticación de Firebase pasando el perfil con el nombre de usuario
                     Task ProfileTask = User.UpdateUserProfileAsync(profile);
-                    //Wait until the task completes
+                    //Espera hasta que se complete la tarea
                     yield return new WaitUntil(predicate: () => ProfileTask.IsCompleted);
 
                     if (ProfileTask.Exception != null)
                     {
-                        //If there are errors handle them
+
+                        //Si hay errores manejarlos
                         Debug.LogWarning(message: $"Failed to register task with {ProfileTask.Exception}");
                         FirebaseException firebaseEx = ProfileTask.Exception.GetBaseException() as FirebaseException;
                         AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
@@ -245,8 +245,8 @@ public class AuntAdimin : MonoBehaviour
                     }
                     else
                     {
-                        //Username is now set
-                        //Now return to login screen
+                        //El nombre de usuario ya está configurado
+                        //Ahora volvemos a la pantalla de inicio de sesión
                         UIManager.instance.LoginScreen();
                         warningRegisterText.text = "";
                     }
@@ -263,24 +263,25 @@ public class AuntAdimin : MonoBehaviour
 
         if (SendPasswordResetEmailTask.Exception != null)
         {
-            // Handle password reset email sending errors
+
+            // Manejar errores de envío de correo electrónico de restablecimiento de contraseña
             Debug.LogWarning($"Failed to send password reset email: {SendPasswordResetEmailTask.Exception}");
             confirmForgotPasswordText.text = "Failed to send reset email";
         }
         else
         {
-            // Password reset email sent successfully
+            // Correo electrónico de restablecimiento de contraseña enviado correctamente
             confirmForgotPasswordText.text = "Reset email sent successfully";
         }
     }
     private IEnumerator UpdateUsernameAuth(string _username)
     {
-        //Create a user profile and set the username
+        //Crea un perfil de usuario y establece el nombre de usuario
         UserProfile profile = new UserProfile { DisplayName = _username };
 
-        //Call the Firebase auth update user profile function passing the profile with the username
+        // Llame a la función de actualización del perfil de usuario de autenticación de Firebase pasando el perfil con el nombre de usuario
         Task ProfileTask = User.UpdateUserProfileAsync(profile);
-        //Wait until the task completes
+        //Espera hasta que se complete la tarea
         yield return new WaitUntil(predicate: () => ProfileTask.IsCompleted);
 
         if (ProfileTask.Exception != null)
@@ -289,12 +290,12 @@ public class AuntAdimin : MonoBehaviour
         }
         else
         {
-            //Auth username is now updated
+            //El nombre de usuario de autenticación ahora está actualizado
         }
     }
     private IEnumerator UpdateUsernameDatabase(string _username)
     {
-        //Set the currently logged in user username in the database
+        // Establece el nombre de usuario del usuario actualmente conectado en la base de datos
         Task DBTask = DBreference.Child("users").Child(User.UserId).Child("username").SetValueAsync(_username);
 
         yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
@@ -305,7 +306,7 @@ public class AuntAdimin : MonoBehaviour
         }
         else
         {
-            //Database username is now updated
+            //El nombre de usuario de la base de datos ahora está actualizado
         }
     }
     private IEnumerator UpdateScoreInDatabase(int _score)
@@ -326,42 +327,34 @@ public class AuntAdimin : MonoBehaviour
     }
     private IEnumerator LoadScoreboardData()
     {
-        //Get all the users data ordered by kills amount
-        Task<DataSnapshot> DBTask = DBreference.Child("users").OrderByChild("score").GetValueAsync();
+        var DBTask = DBreference.Child("users").OrderByChild("score").GetValueAsync();
 
         yield return new WaitUntil(predicate: () => DBTask.IsCompleted);
 
-        if (DBTask.Exception != null)
-        {
-            Debug.LogWarning(message: $"Failed to register task with {DBTask.Exception}");
-        }
+        if (DBTask.Exception != null) Debug.LogWarning($"Fallo en registrar la tarea {DBTask.Exception}");
         else
         {
-            //Data has been retrieved
             DataSnapshot snapshot = DBTask.Result;
 
-            //Destroy any existing scoreboard elements
-            foreach (Transform child in scoreboardContent.transform)
-            {
-                Destroy(child.gameObject);
-            }
+            //Destruyo todos los elementos de la tabla
+            foreach (Transform child in scoreboardContent.transform) Destroy(child.gameObject);
 
-            //Loop through every users UID
             foreach (DataSnapshot childSnapshot in snapshot.Children.Reverse<DataSnapshot>())
             {
                 string username = childSnapshot.Child("username").Value.ToString();
-                int score = int.Parse(childSnapshot.Child("score").Value.ToString());   
+                int score = int.Parse(childSnapshot.Child("score").Value.ToString());
 
-                //Instantiate new scoreboard elements
                 GameObject scoreboardElement = Instantiate(scoreElement, scoreboardContent);
                 scoreboardElement.GetComponent<ScoreElement>().NewScoreElement(username, score);
             }
-            UIManager.instance.ScoreboardScreen();
         }
+
+        UIManager.instance.ScoreboardScreen();
+
     }
 }
 
-[System.Serializable]
+    [System.Serializable]
 public class PlayerScore
 {
     public string username;

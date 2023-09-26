@@ -6,7 +6,7 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
 
-    //Screen object variables
+    //Variables del objeto de pantalla
     public GameObject loginUI;
     public GameObject registerUI;
     public GameObject ForgotPasswordUI;
@@ -26,7 +26,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //Functions to change the login screen UI
+    //Funciones para cambiar la interfaz de usuario de la pantalla de inicio de sesión
     public void LoginScreen() //Back button
     {
         loginUI.SetActive(true);
@@ -34,7 +34,7 @@ public class UIManager : MonoBehaviour
         ForgotPasswordUI.SetActive(false);
         userDataUI.SetActive(false);
     }
-    public void RegisterScreen() // Regester button
+    public void RegisterScreen() // botón Registrar
     {
         loginUI.SetActive(false);
         registerUI.SetActive(true);
@@ -53,7 +53,7 @@ public class UIManager : MonoBehaviour
         ClearScreen();
         userDataUI.SetActive(true);
     }
-    public void ClearScreen() //Turn off all screens
+    public void ClearScreen() //Apagar todas las pantallas
     {
         loginUI.SetActive(false);
         registerUI.SetActive(false);
